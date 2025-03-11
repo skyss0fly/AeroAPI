@@ -1,4 +1,3 @@
-<?php
 namespace skyss0fly\AeroAPI;
 
 use pocketmine\plugin\PluginBase;
@@ -6,63 +5,62 @@ use pocketmine\player\Player;
 
 class Main extends PluginBase {
     private $money = [];
-    public $version;
-    public $isdevelopment;
-    
-    public function onLoad(): void {
-        // Initialize the money array
-        $this->money = [];
-        $this->version = 0.2; // 0.3 is next
-        $this->isdevelopment = true;
+    private $dataFile;
+private const VERSION = 0.2;
+private $isdevelopment = true;
 
-
-    }
-    public function getApiVersion(): bool {
-        return $this->version;
-    }
-public function isApiInDevelopment(): bool {
-    return $this->isdevelopment;
+public function getApiVersion(): float {
+    return self::VERSION;
 }
+public function IsApiInDevelopment(): bool {
+return $this->isdevelopment;
+}
+
+    public function onEnable(): void {
+        // Define the data file path
+        $this->dataFile = $this->getDataFolder() . "money.json";
+
+        // Ensure the directory exists
+        if (!is_dir($this->getDataFolder())) {
+            @mkdir($this->getDataFolder(), 0777, true);
+        }
+
+        // Load player balances from the JSON file
+        if (file_exists($this->dataFile)) {
+            $this->money = json_decode(file_get_contents($this->dataFile), true) ?? [];
+        }
+    }
+
+    public function onDisable(): void {
+        // Save player balances to the JSON file when the server stops
+        file_put_contents($this->dataFile, json_encode($this->money, JSON_PRETTY_PRINT));
+    }
 
     public function addMoney(Player $player, int $amount): bool {
         $playerName = $player->getName();
-        
-        // Check if the player already has money recorded
-        if (isset($this->money[$playerName])) {
-            $previous = $this->money[$playerName];
-        } else {
-            $previous = 0;
-        }
-
-        // Calculate the new amount
-        $new = $previous + $amount;
-        $this->money[$playerName] = $new;
-
-        // Return true to indicate the operation was successful
+        $this->money[$playerName] = ($this->money[$playerName] ?? 0) + $amount;
+        $this->saveData(); // Save changes
         return true;
     }
 
     public function getMoney(Player $player): int {
-        $playerName = $player->getName();
-
-        // Return the player's money or 0 if not set
-        return $this->money[$playerName] ?? 0;
+        return $this->money[$player->getName()] ?? 0;
     }
-public function deductMoney(Player $player, int $amount): bool {
+
+    public function deductMoney(Player $player, int $amount): bool {
         $playerName = $player->getName();
-        
-        // Check if the player already has money recorded
-        if (isset($this->money[$playerName])) {
-            $previous = $this->money[$playerName];
-        } else {
-            $previous = 0;
+        $currentBalance = $this->money[$playerName] ?? 0;
+
+        if ($currentBalance < $amount) {
+            return false; // Not enough money
         }
 
-        // Calculate the new amount
-        $new = $previous - $amount;
-        $this->money[$playerName] = $new;
-
-        // Return true to indicate the operation was successful
+        $this->money[$playerName] = $currentBalance - $amount;
+        $this->saveData(); // Save changes
         return true;
-}
-}
+    }
+
+    private function saveData(): void {
+        file_put_contents($this->dataFile, json_encode($this->money, JSON_PRETTY_PRINT));
+    }
+            }
