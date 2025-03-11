@@ -8,8 +8,8 @@ use pocketmine\player\Player;
 
 class Main extends PluginBase {
     private $money = [];
-    public version;
-    public isdevelopment;
+    public $version;
+    public $isdevelopment;
     
     public function onLoad(): void {
         // Initialize the money array
