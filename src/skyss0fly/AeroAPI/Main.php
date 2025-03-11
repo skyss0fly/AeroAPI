@@ -1,3 +1,4 @@
+<?php
 namespace skyss0fly\AeroAPI;
 
 use pocketmine\plugin\PluginBase;
