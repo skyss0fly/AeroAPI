@@ -6,15 +6,17 @@ use pocketmine\player\Player;
 class Main extends PluginBase {
     private $money = [];
     private $dataFile;
-private const VERSION = 0.2;
-private $isdevelopment = true;
+    private const VERSION = "0.2"; // Use string for precise versioning
+    private bool $isDevelopment = true;
 
-public function getApiVersion(): float {
-    return self::VERSION;
-}
-public function IsApiInDevelopment(): bool {
-return $this->isdevelopment;
-}
+    public function getApiVersion(): string {
+        return self::VERSION;
+    }
+
+    public function isApiInDevelopment(): bool {
+        return $this->isDevelopment;
+    }
+
 
     public function onEnable(): void {
         // Define the data file path
