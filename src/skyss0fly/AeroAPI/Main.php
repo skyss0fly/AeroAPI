@@ -50,8 +50,6 @@ public function isApiInDevelopment(): bool {
         // Return the player's money or 0 if not set
         return $this->money[$playerName] ?? 0;
     }
-}
-
 public function deductMoney(Player $player, int $amount): bool {
         $playerName = $player->getName();
         
@@ -68,4 +66,5 @@ public function deductMoney(Player $player, int $amount): bool {
 
         // Return true to indicate the operation was successful
         return true;
+}
 }
